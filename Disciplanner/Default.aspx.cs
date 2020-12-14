@@ -138,6 +138,10 @@ namespace Disciplanner
             //Directive body
 
             //Set current time
+            /**
+             * Going to comment out the directives bit because I want to refactor where these LINQ queries are being made
+             * Possibly create a DAO
+             *
             long cur_Time = Convert.ToInt64(time.getCurrentTime());
             Appointment cur_Apt = (from x in dbcon.Appointments
                                    where Convert.ToInt64(x.StartTime) > cur_Time && Convert.ToInt64(x.EndTime) < cur_Time
@@ -151,7 +155,7 @@ namespace Disciplanner
             lblNDirective.InnerText = nextAppointment.Name;
             
             lblNDirective_deltaTime.InnerText = (Convert.ToInt64(nextAppointment.StartTime) - cur_Time).ToString();
-
+    */
             //End of directive 
 
         }
@@ -173,6 +177,7 @@ namespace Disciplanner
             {
                 dbcon.Tasks.Add(new Task("Do thing", cat.CategoryID, 5, "lorem ipsum"));
             }
+
             dbcon.SaveChanges();
             
         }

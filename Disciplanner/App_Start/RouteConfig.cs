@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Routing;
 using Microsoft.AspNet.FriendlyUrls;
+using Disciplanner.Controllers;
 
 namespace Disciplanner
 {
