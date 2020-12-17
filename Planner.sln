@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Disciplanner", "Disciplanner\Disciplanner.csproj", "{D55C33AA-2612-4696-AB2D-9F4CEC54729E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Planner", "Planner\Planner.csproj", "{D55C33AA-2612-4696-AB2D-9F4CEC54729E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisciplannerAT", "DisciplannerAT\DisciplannerAT.csproj", "{46DDE5FC-29DC-45BE-B1C9-B4D99C911BDB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlannerAT", "PlannerAT\PlannerAT.csproj", "{46DDE5FC-29DC-45BE-B1C9-B4D99C911BDB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
