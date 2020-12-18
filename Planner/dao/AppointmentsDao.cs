@@ -26,7 +26,7 @@ namespace Planner.dao
                 IEnumerable<Appointment> appointments = (from x in dbcon.Appointments
                                                          orderby x.StartTime
                                                          select x).AsEnumerable<Appointment>();
-                return appointments;
+                return appointments.ToList();
             }
         }
 

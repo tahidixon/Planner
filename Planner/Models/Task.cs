@@ -15,6 +15,7 @@ namespace Planner.Models
     using System.Security.Claims;
     using System.Threading.Tasks;
     using System.Web.Script.Serialization;
+    using Newtonsoft.Json;
     using Planner.Util;
 
 
@@ -57,6 +58,10 @@ namespace Planner.Models
 
         public int ParentEntity { get; set; }
 
+        public int UserID { get; set; }
+
+
+        //Parameterless constructor should do nothing
         public Task()
         {
             this.Name = "Task";
@@ -67,7 +72,9 @@ namespace Planner.Models
             this.StartTime = "undefined";
             this.EndTime = "undefined";
             this.ParentEntity = -1;
+            this.UserID = -1;
         }
+
         public Task (IDataReader reader)
         {
             this.TaskID = Convert.ToInt32(reader["AppointmentID"]);
@@ -79,8 +86,9 @@ namespace Planner.Models
             this.StartTime = reader["StartTime"] as string;
             this.EndTime = reader["EndTime"] as string;
             this.ParentEntity = Convert.ToInt32(reader["ParentEntity"]);
+            this.UserID = Convert.ToInt32(reader["UserID"]);
         }
-        public Task(string Name, string Category, int Priority, string Notes, string StartTime = "undefined", string EndTime = "undefined", int ParentEntity = -1)
+        public Task(string Name, string Category, int Priority, string Notes, string StartTime = "undefined", string EndTime = "undefined", int ParentEntity = -1, int UserID = -1)
         {
             this.Name = Name;
             this.CreationTime = time.getCurrentTime();
@@ -90,6 +98,12 @@ namespace Planner.Models
             this.StartTime = StartTime;
             this.EndTime = EndTime;
             this.ParentEntity = ParentEntity;
+            this.UserID = UserID;
+        }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
         }
 
     }

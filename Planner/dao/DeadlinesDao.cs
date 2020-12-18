@@ -26,7 +26,7 @@ namespace Planner.dao
                 IEnumerable<Deadline> deadlines = (from x in dbcon.Deadlines
                                                    orderby x.StartTime
                                                    select x).AsEnumerable<Deadline>();
-                return deadlines;
+                return deadlines.ToList();
             }
         }
 

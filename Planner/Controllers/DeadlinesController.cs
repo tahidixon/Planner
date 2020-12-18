@@ -6,10 +6,10 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Planner.Models;
-using Planner.dao;
 using Planner.Services;
 
 namespace Planner.Controllers
@@ -19,85 +19,116 @@ namespace Planner.Controllers
     {
         DeadlineService _Deadlines = new DeadlineService();
 
-        [HttpGet]
-        [Route("")]
+
         // GET: api/Deadlines
-        public IEnumerable<Deadline> GetDeadlines()
+        [Route("", Name = "GetDeadlines"), HttpGet]
+        [ResponseType(typeof(IQueryable<Deadline>))]
+        public IQueryable<Deadline> GetDeadlines()
         {
-            return _Deadlines.GetDeadlines();
+            return _Deadlines.GetDeadlines().AsQueryable();
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
         // GET: api/Deadlines/5
+
+        [Route("{id:int}", Name = "GetDeadlineById"), HttpGet]
         [ResponseType(typeof(Deadline))]
-        public IHttpActionResult GetDeadline(int id)
+        public HttpResponseMessage GetDeadline(int id)
         {
+            var response = Request.CreateResponse();
             if (id < 0)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
             Deadline deadline = _Deadlines.GetDeadlineById(id);
             if (deadline == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
             }
-
-            return Ok(deadline);
+            else
+            {
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(deadline.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
+            }
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
         // PUT: api/Deadlines/5
+
+        [Route("{id:int}", Name = "PutDeadline"), HttpPut]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutDeadline(int id, Deadline deadline)
+        public HttpResponseMessage PutDeadline(int id, [FromBody] Deadline deadline)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
 
             if (id != deadline.DeadlineID)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
+            else
+            {
+                _Deadlines.UpdateDeadline(deadline);
 
-            _Deadlines.UpdateDeadline(deadline);
-            return StatusCode(HttpStatusCode.NoContent);
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(deadline.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
+            }
         }
 
-        [HttpGet]
-        [Route("")]
-        // POST: api/Deadlines
+        [Route("", Name = "PostDeadline"), HttpPost]
         [ResponseType(typeof(Deadline))]
-        public IHttpActionResult PostDeadline(Deadline deadline)
+        public HttpResponseMessage PostDeadline([FromBody] Deadline deadline)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
-
-            _Deadlines.AddDeadline(deadline);
-            return CreatedAtRoute("DefaultApi", new { id = deadline.DeadlineID }, deadline);
-        }
-
-        [HttpGet]
-        [Route("{id:int}")]
-        // DELETE: api/Deadlines/5
-        [ResponseType(typeof(Deadline))]
-        public IHttpActionResult DeleteDeadline(int id)
-        {
-            Deadline deadline = _Deadlines.GetDeadlineById(id);
-            if (deadline == null)
+            else
             {
-                return NotFound();
+                _Deadlines.AddDeadline(deadline);
+                //Set status code
+                response.StatusCode = HttpStatusCode.Created;
+                //Set content of response to JSON
+                var httpContent = new StringContent(deadline.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
             }
 
-            _Deadlines.DeleteDeadline(id);
-
-            return Ok(deadline);
         }
 
-        
+        // DELETE: api/Deadlines/5
+
+        [Route("{id:int}", Name = "DeleteDeadline"), HttpDelete]
+        [ResponseType(typeof(Deadline))]
+        public HttpResponseMessage DeleteDeadline(int id)
+        {
+            var response = Request.CreateResponse();
+            if (_Deadlines.GetDeadlineById(id) == null)
+            {
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }
+            else
+            {
+                _Deadlines.DeleteDeadline(id);
+                response.StatusCode = HttpStatusCode.NoContent;
+                return response;
+            }
+        }
     }
 }

@@ -18,16 +18,16 @@
                             <ItemTemplate>
                                 <div class="panel panel-default" runat="server">
                                     <div class="panel-heading" >
-                                        <h4 class="panel-title" style='<%# "font-size:14px; color:#ffffff; background-color:#" + Eval("TaskCategory") + "; border-color:#" + Eval("TaskCategory") + ";"%>' >
+                                        <h4 class="panel-title" style='<%# "font-size:14px; color:#ffffff; background-color:#" + Eval("Category") + "; border-color:#" + Eval("Category") + ";"%>' >
                                             <a data-toggle="collapse" data-parent="#accordion" href='<%# "#collapse_" + Eval("TaskID") %>' runat="server" OnItemCommand="rptTaskPanel_setActiveElement" CommandArgument='<%# Eval("TaskID") %>'>
-                                                <asp:Label runat="server" ID="taskName" Text='<%# Eval("TaskName") %>'></asp:Label>
-                                                <asp:Label runat="server" class="pull-right" Style="overflow: hidden; white-space: nowrap;" ID="taskCreated" Text='<%# "Priority: " + Eval("TaskPriority") %>'></asp:Label>
+                                                <asp:Label runat="server" ID="taskName" Text='<%# Eval("Name") %>'></asp:Label>
+                                                <asp:Label runat="server" class="pull-right" Style="overflow: hidden; white-space: nowrap;" ID="taskCreated" Text='<%# "Priority: " + Eval("Priority") %>'></asp:Label>
                                             </a>
                                         </h4>
                                     </div>
                                     <div id='<%# "collapse_" + Eval("TaskID") %>' class="panel-collapse collapse">
                                         <div runat="server" class="panel-body" >
-                                            <p runat="server" text='<%# Eval("TaskNotes") %>'></p>
+                                            <p runat="server" text='<%# Eval("Notes") %>'></p>
                                         </div>
                                     </div>
                                 </div>
@@ -37,9 +37,6 @@
                 </div>
                 <div class="panel-footer">
                     <div class="navbar">
-                            <button type="button" id="btnDaySort" class="btn btn-default" data-toggle="modal" data-target="#sortTaskModal"><span class="glyphicon glyphicon-th-list"></span></button>
-                            <button type="button" id="btnAddTask" class="btn btn-default pull-right" data-toggle="modal" data-target="#addTaskModal"><span class="glyphicon glyphicon-plus"></span></button>
-                            <button type="button" id="btnRemDay" class="btn btn-default pull-right" runat="server" data-toggle="modal" data-target="#deleteTaskModal"><span class="glyphicon glyphicon-minus"></span></button>
                     </div>
                  </div>
                     <div class="modal fade" id="addTaskModal">
@@ -60,9 +57,7 @@
                                                 <asp:Label ID="lblTaskNotes" runat="server">Notes:</asp:Label>
                                                 <asp:TextBox ID="txtTaskNotes" runat="server" CssClass="form-control center-block" TextMode="MultiLine"></asp:TextBox>
                                                 <br />
-                                                <asp:Button ID="btnConfirmTask" runat="server" Text="Add" CssClass="btn btn-success center-block" OnClick="btnConfirmTask_Click" data-dismiss="modal"/>
-
-                                                <asp:Button ID="btnCancelTask" runat="server" Text="Cancel" CssClass="btn btn-default center-block" data-dismiss="modal"/>
+                                                
                                             </div>
                                         </div>
                                     </div>

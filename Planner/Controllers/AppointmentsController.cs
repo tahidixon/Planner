@@ -6,10 +6,10 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Planner.Models;
-using Planner.dao;
 using Planner.Services;
 
 namespace Planner.Controllers
@@ -19,84 +19,116 @@ namespace Planner.Controllers
     {
         AppointmentService _Appointments = new AppointmentService();
 
-        [HttpGet]
-        [Route("")]
+
         // GET: api/Appointments
-        public IEnumerable<Appointment> GetAppointments()
+        [Route("", Name = "GetAppointments"), HttpGet]
+        [ResponseType(typeof(IQueryable<Appointment>))]
+        public IQueryable<Appointment> GetAppointments()
         {
-            return _Appointments.GetAppointments();
+            return _Appointments.GetAppointments().AsQueryable();
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
         // GET: api/Appointments/5
+
+        [Route("{id:int}", Name = "GetAppointmentById"), HttpGet]
         [ResponseType(typeof(Appointment))]
-        public IHttpActionResult GetAppointment(int id)
+        public HttpResponseMessage GetAppointment(int id)
         {
+            var response = Request.CreateResponse();
             if (id < 0)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
-
             Appointment appointment = _Appointments.GetAppointmentById(id);
             if (appointment == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
             }
-
-            return Ok(appointment);
+            else
+            {
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(appointment.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
+            }
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
         // PUT: api/Appointments/5
+
+        [Route("{id:int}", Name = "PutAppointment"), HttpPut]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutAppointment(int id, Appointment appointment)
+        public HttpResponseMessage PutAppointment(int id, [FromBody] Appointment appointment)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
 
             if (id != appointment.AppointmentID)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
+            else
+            {
+                _Appointments.UpdateAppointment(appointment);
 
-            _Appointments.UpdateAppointment(appointment);
-            return StatusCode(HttpStatusCode.NoContent);
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(appointment.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
+            }
         }
 
-        [HttpGet]
-        [Route("")]
-        // POST: api/Appointments
+        [Route("", Name = "PostAppointment"), HttpPost]
         [ResponseType(typeof(Appointment))]
-        public IHttpActionResult PostAppointment(Appointment appointment)
+        public HttpResponseMessage PostAppointment([FromBody] Appointment appointment)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            }
+            else
+            {
+                _Appointments.AddAppointment(appointment);
+                //Set status code
+                response.StatusCode = HttpStatusCode.Created;
+                //Set content of response to JSON
+                var httpContent = new StringContent(appointment.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
             }
 
-            _Appointments.AddAppointment(appointment);
-            return CreatedAtRoute("DefaultApi", new { id = appointment.AppointmentID }, appointment);
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
         // DELETE: api/Appointments/5
+
+        [Route("{id:int}", Name = "DeleteAppointment"), HttpDelete]
         [ResponseType(typeof(Appointment))]
-        public IHttpActionResult DeleteAppointment(int id)
+        public HttpResponseMessage DeleteAppointment(int id)
         {
-            Appointment appointment = _Appointments.GetAppointmentById(id);
-            if (appointment == null)
+            var response = Request.CreateResponse();
+            if (_Appointments.GetAppointmentById(id) == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
             }
-
-            _Appointments.DeleteAppointment(id);
-
-            return Ok(appointment);
+            else
+            {
+                _Appointments.DeleteAppointment(id);
+                response.StatusCode = HttpStatusCode.NoContent;
+                return response;
+            }
         }
     }
 }

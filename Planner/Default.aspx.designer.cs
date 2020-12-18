@@ -22,15 +22,6 @@ namespace Planner {
         protected global::System.Web.UI.WebControls.Repeater rptTaskPanel;
         
         /// <summary>
-        /// btnRemDay control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlButton btnRemDay;
-        
-        /// <summary>
         /// lblTaskName control.
         /// </summary>
         /// <remarks>
@@ -83,24 +74,6 @@ namespace Planner {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtTaskNotes;
-        
-        /// <summary>
-        /// btnConfirmTask control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConfirmTask;
-        
-        /// <summary>
-        /// btnCancelTask control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCancelTask;
         
         /// <summary>
         /// btnDaySort_Categories control.

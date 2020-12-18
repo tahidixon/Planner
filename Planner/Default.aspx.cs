@@ -16,7 +16,8 @@ namespace Planner
     public partial class _Default : Page
     {
         TasksController _Tasks = new TasksController();
-        
+        AppointmentsController _Appointments = new AppointmentsController();
+
         TimeUtil time = new TimeUtil();
         public bool tempCreate = false;
 
@@ -41,11 +42,7 @@ namespace Planner
             //Populates the table with tasks if there isn't any, as a debugging tool.
             //We're leaving it in and going to have it print task ID's
             IEnumerable<Task> AllTasksInDb = _Tasks.GetTasks();
-            foreach (var x in AllTasksInDb)
-            {
-                outBox.Items.Add("Item exists in list. ID: " + x.TaskID);
-            }
-            rptTaskPanel.DataSource = tList;
+            rptTaskPanel.DataSource = AllTasksInDb;
             rptTaskPanel.DataBind();
 
 
@@ -55,18 +52,7 @@ namespace Planner
             //
             //Gets elements needed from categories to display in the sort panel
 
-            dbcon.Categories.Load();
-            var cats = (from x in dbcon.Categories.Local
-                        select new
-                        {
-                            cats_Names = x.Name,
-                            cats_ID = x.CategoryID
-                        });
 
-            btnDaySort_Categories.DataTextField = "cats_Names";
-            btnDaySort_Categories.DataValueField = "cats_ID";
-            btnDaySort_Categories.DataSource = cats;
-            btnDaySort_Categories.DataBind();
 
 
             //End of day footer
@@ -80,16 +66,13 @@ namespace Planner
             //End of week header
             //
             //Week body
-            
+
             //Create a enumerable list of appointments. Mainly to check to see if there is any.
-            IEnumerable<Appointment> apts = (from x in dbcon.Appointments
-                                             orderby x.StartTime
-                                             select x).AsEnumerable();
+            IEnumerable<Appointment> apts = _Appointments.GetAppointments();
             //Create instance data if none exists within current scope
-            if (!apts.Any()) populateAppointments();
 
             //Bind viewer data
-            var aptList = (from x in dbcon.Appointments
+            var aptList = (from x in apts
                            select new
                            {
                                aptID = x.AppointmentID,
@@ -136,36 +119,5 @@ namespace Planner
             //End of directive 
 
         }
-    
-        
-
-        protected void btnConfirmTask_Click(object sender, EventArgs e)
-        {
-            
-            string name = txtTaskName.Text;
-            string category = ddCategory.DataValueField;
-            string notes = txtTaskNotes.Text;
-            Category cat = 
-            dbcon.Tasks.Add(new Models.Task(name, cat.CategoryID, 5, notes));
-            
-        }
-
-        protected void taskGridView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
-            object tRow = from x in dbcon.Tasks
-                          where sender.Equals(x)
-                          select x;
-            outBox.Items.Add("Selected " + tRow.ToString());
-            
-        }
-        protected void rptTaskPanel_setActiveElement(object sender, RepeaterCommandEventArgs e)
-        {
-            string panelID = (string)e.CommandArgument;
-            string[] tmp_Split = Regex.Split(panelID, "_");
-            outBox.Items.Add("Item " + panelID + " selected as active element.");
-        }
-    
-        
     } 
 }

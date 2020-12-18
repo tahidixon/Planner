@@ -35,10 +35,15 @@ namespace Planner.dao
         {
             using (PlannerContext dbcon = new PlannerContext())
             {
-                Task task = (from x in dbcon.Tasks
-                                           where x.TaskID == id
-                                           select x).First();
-                return task;
+                if (TaskExists(id))
+                {
+                    Task task = (from x in dbcon.Tasks
+                                 where x.TaskID == id
+                                 select x).First();
+                    return task;
+                }
+                else return null;
+                
             }
         }
         //Overwrites a task with the same TaskID within the database
@@ -57,6 +62,7 @@ namespace Planner.dao
                 //Attach the new one
                 dbcon.Tasks.Attach(task);
                 dbcon.Entry(task).State = EntityState.Modified;
+                dbcon.SaveChanges();
                 return task;
             }
         }
@@ -68,6 +74,7 @@ namespace Planner.dao
             {
                 dbcon.Tasks.Add(task);
                 dbcon.Entry(task).State = EntityState.Added;
+                dbcon.SaveChanges();
                 return task;
             }
         }
@@ -80,6 +87,7 @@ namespace Planner.dao
                                     select x).First();
                 dbcon.Tasks.Remove(deletedTask);
                 dbcon.Entry(deletedTask).State = EntityState.Deleted;
+                dbcon.SaveChanges();
             }
         }
 

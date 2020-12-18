@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Planner.Models;
@@ -20,84 +21,111 @@ namespace Planner.Controllers
 
         
         // GET: api/Tasks
-        [HttpGet]
-        [Route("")]
+        [Route("", Name = "GetTasks"), HttpGet]
+        [ResponseType(typeof(IQueryable<Task>))]
         public IQueryable<Task> GetTasks()
         {
-            return _Tasks.GetTasks().AsQueryable<Task>();
+            return _Tasks.GetTasks().AsQueryable();
         }
 
         // GET: api/Tasks/5
-        [HttpGet]
-        [Route("{id:int}")]
+        
+        [Route("{id:int}", Name = "GetTaskById"), HttpGet]
         [ResponseType(typeof(Task))]
-        public IHttpActionResult GetTask(int id)
+        public HttpResponseMessage GetTask(int id)
         {
+            var response = Request.CreateResponse();
             if (id < 0)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
             Task task = _Tasks.GetTaskById(id);
             if (task == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            } else
+            {
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(task.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
             }
-
-            return Ok(task);
         }
 
         // PUT: api/Tasks/5
         
-        [HttpPut]
-        [Route("{id:int}")]
+        [Route("{id:int}", Name = "PutTask"), HttpPut]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutTask(int id, Task task)
+        public HttpResponseMessage PutTask(int id, [FromBody] Task task)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
 
             if (id != task.TaskID)
             {
-                return BadRequest();
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
+            } else
+            {
+                _Tasks.UpdateTask(task);
+
+                //Set status code
+                response.StatusCode = HttpStatusCode.OK;
+                //Set content of response to JSON
+                var httpContent = new StringContent(task.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
             }
-
-            _Tasks.UpdateTask(task);
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
-        [HttpPost]
-        [Route("")]
+        
+        [Route("", Name = "PostTask"), HttpPost]
         [ResponseType(typeof(Task))]
-
-        public IHttpActionResult PostTask(Task task)
+        public HttpResponseMessage PostTask([FromBody] Task task)
         {
+            var response = Request.CreateResponse();
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return response;
             }
-
-            _Tasks.AddTask(task);
-
-            return CreatedAtRoute("DefaultApi", new { id = task.TaskID }, task);
+            else
+            {
+                _Tasks.AddTask(task);
+                //Set status code
+                response.StatusCode = HttpStatusCode.Created;
+                //Set content of response to JSON
+                var httpContent = new StringContent(task.ToString(), Encoding.UTF8, "application/json");
+                response.Content = httpContent;
+                return response;
+            }
+            
         }
 
         // DELETE: api/Tasks/5
+
+        [Route("{id:int}", Name = "DeleteTask"), HttpDelete]
         [ResponseType(typeof(Task))]
-        [HttpDelete]
-        [Route("{id:int}")]
-        public IHttpActionResult DeleteTask(int id)
+        public HttpResponseMessage DeleteTask(int id)
         {
-            
+            var response = Request.CreateResponse();
             if (_Tasks.GetTaskById(id) == null)
             {
-                return NotFound();
+                response.StatusCode = HttpStatusCode.NotFound;
+                return response;
+            }else
+            {
+                _Tasks.DeleteTask(id);
+                response.StatusCode = HttpStatusCode.NoContent;
+                return response;
             }
-
-            _Tasks.DeleteTask(id);
-
-            return Ok(_Tasks.GetTaskById(id));
         }
     }
 }
